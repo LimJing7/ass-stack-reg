@@ -77,7 +77,10 @@ def main():
     def drawst():
         for i in range(len(stacky.value)):
             pygame.draw.rect(background, STACKCOLOR,[WIDTH-REGSIZE[0],HEIGHT-(i+1)*REGSIZE[1],REGSIZE[0],REGSIZE[1]])
-            stackValue= font.render(str(stacky.value[i]),1,(0,0,0))
+            try:
+                stackValue= font.render(hex(stacky.value[i]),1,(0,0,0))
+            except:
+                stackValue= font.render(str(stacky.value[i]),1,(0,0,0))
             stackValuepos= stackValue.get_rect()
             stackValuepos.centerx=WIDTH-REGSIZE[0]/2
             stackValuepos.centery=HEIGHT-(i+1)*REGSIZE[1]+REGSIZE[1]/2
@@ -148,21 +151,20 @@ def main():
                             elif a[0]=='mov':
                                 try:
                                     eval(a[1]).move(eval(a[2]))
-                                except:
-                                    print a[2]
+                                except TypeError:
                                     eval(a[1]).move(a[2])
                             elif a[0]=='add':
-                                try:
+                                try: #if it is a register
                                     eval(a[1]).add(eval(a[2]))
-                                except:
+                                except TypeError:
                                     eval(a[1]).add(a[2])
                             elif a[0]=='sub':
                                 try:
                                     eval(a[1]).sub(eval(a[2]))
-                                except:
+                                except TypeError:
                                     eval(a[1]).sub(a[2])
-                        except:
-                            pass
+                        except Exception as e:
+                            print e
                         input=''
                     else:
                         input+=event.unicode
