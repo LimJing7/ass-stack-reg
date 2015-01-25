@@ -163,6 +163,9 @@ def main():
                                     eval(a[1]).sub(eval(a[2]))
                                 except TypeError:
                                     eval(a[1]).sub(a[2])
+                            elif a[0]=='xor':
+                                if a[1]==a[2]:
+                                    eval(a[1]).xor()
                         except Exception as e:
                             print e
                         input=''

@@ -26,6 +26,9 @@ class Register(pygame.sprite.Sprite):
         except AttributeError:
             self.value -= int(source)
     
+    def xor(self):
+        self.value=0
+    
     def __add__(self, source):
         return self.value+source
     
