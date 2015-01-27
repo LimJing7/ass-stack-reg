@@ -35,13 +35,13 @@ def main():
     edx=reg.Register('edx',yellow)
     registers=[eax,ebx,ecx,edx]
     
-    #create ebp and esp
-    ebp=reg.special('ebp')
-    esp=reg.special('esp')
-    
     #create stack
-    stacky=stack.Stack()
-       
+    stacky=stack.Stack(4096)
+    
+    #create ebp and esp
+    ebp=reg.special('ebp',stacky.start)
+    esp=reg.special('esp',stacky.start)
+    
     #set font
     if pygame.font:
         #none 24
@@ -100,12 +100,12 @@ def main():
         ebpw=font.render('ebp',1,(255,255,255))
         ebppos=ebpw.get_rect()
         ebppos.centerx=WIDTH-REGSIZE[0]*1.5
-        ebppos.centery=HEIGHT-ebp.pos*REGSIZE[1]+REGSIZE[1]/2
+        ebppos.centery=HEIGHT-((stacky.start-ebp.value)/4+1)*REGSIZE[1]+REGSIZE[1]/2
         background.blit(ebpw,ebppos)
         espw=font.render('esp',1,(255,255,255))
         esppos=espw.get_rect()
         esppos.centerx=WIDTH-REGSIZE[0]*2.5
-        esppos.centery=HEIGHT-esp.pos*REGSIZE[1]+REGSIZE[1]/2
+        esppos.centery=HEIGHT-((stacky.start-esp.value)/4+1)*REGSIZE[1]+REGSIZE[1]/2
         background.blit(espw,esppos)
     
     
@@ -149,10 +149,16 @@ def main():
                             elif a[0]=='pop':
                                 stacky.pop(eval(a[1]))
                             elif a[0]=='mov':
-                                try:
-                                    eval(a[1]).move(eval(a[2]))
-                                except TypeError:
-                                    eval(a[1]).move(a[2])
+                                if a[2][0]=='[' and a[2][-1]==']':
+                                    if len(a[2])==3:
+                                        eval(a[1]).move(stacky.value[(stacky.start-eval(a[2][1:4]).value)/4])
+                                    else:
+                                        eval(a[1]).move(stacky.value[(stacky.start-eval(str(eval(a[2][1:4]).value)+a[2][4:-1]))/4])
+                                else:
+                                    try:
+                                        eval(a[1]).move(eval(a[2]))
+                                    except TypeError:
+                                        eval(a[1]).move(a[2])
                             elif a[0]=='add':
                                 try: #if it is a register
                                     eval(a[1]).add(eval(a[2]))
